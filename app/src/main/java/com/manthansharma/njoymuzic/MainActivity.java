@@ -10,8 +10,13 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -30,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.listViewSong);
         checkRunTimePermission();
+        displaySongs();
 
     }
 
@@ -43,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                displaySongs();
+
                 //Permission Granted
             }
             else if (Build.VERSION.SDK_INT >= 23 && !shouldShowRequestPermissionRationale(permissions[0])) {
@@ -83,7 +89,37 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i< mySongs.size(); i++){
             items[i] = mySongs.get(i).getName().toString().replace(".mp3","").replace(".wav","");
         }
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        listView.setAdapter(myAdapter);
+
+        CustomAdapter customAdapter = new CustomAdapter();
+        listView.setAdapter(customAdapter);
+    }
+
+    class CustomAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return items.length;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+
+            View myView = getLayoutInflater().inflate(R.layout.list_item,null);
+
+            TextView textSong = myView.findViewById(R.id.txtSongName);
+            textSong.setSelected(true);
+            textSong.setText(items[i]);
+            return myView;
+        }
     }
 }

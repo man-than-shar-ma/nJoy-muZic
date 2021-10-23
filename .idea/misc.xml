@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Practice/AndroidStudioPractice/nJoymuZic/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Practice/AndroidStudioPractice/nJoymuZic/app/src/main/res/drawable/list_bg.xml" value="0.67" />
+        <entry key="..\:/Practice/AndroidStudioPractice/nJoymuZic/app/src/main/res/layout/activity_main.xml" value="0.5" />
+        <entry key="..\:/Practice/AndroidStudioPractice/nJoymuZic/app/src/main/res/layout/list_item.xml" value="0.41131105398457585" />
       </map>
     </option>
   </component>
