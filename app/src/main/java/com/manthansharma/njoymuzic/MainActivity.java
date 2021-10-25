@@ -84,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
     void displaySongs(){
         final ArrayList<File> mySongs = findSong(Environment.getExternalStorageDirectory());
 
+            if(mySongs.size()==0){
+                return;
+            }
+
         items = new String[mySongs.size()];
 
         for(int i = 0; i< mySongs.size(); i++){

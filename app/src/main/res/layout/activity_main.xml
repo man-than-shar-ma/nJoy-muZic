@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#141414"
+    android:background="#E6E6E6"
     tools:context=".MainActivity">
 
     <ListView
         android:id="@+id/listViewSong"
         android:divider="@android:color/transparent"
-        android:dividerHeight="10dp"
-        android:padding="8dp"
+        android:dividerHeight="6dp"
+        android:padding="6dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/list_item"
