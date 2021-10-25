@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,25 +69,23 @@ public class MainActivity extends AppCompatActivity {
 
         File[] files = file.listFiles();
 
-        for(File singleFile : files){
-            if(singleFile.isDirectory() && !singleFile.isHidden()){
-                arrayList.addAll(findSong(singleFile));
-            }
-            else {
-                if(singleFile.getName().endsWith(".mp3") || singleFile.getName().endsWith(".wav")){
-                    arrayList.add(singleFile);
+        if(files!=null) {
+            for (File singleFile : files) {
+                if (singleFile.isDirectory() && !singleFile.isHidden()) {
+                    arrayList.addAll(findSong(singleFile));
+                } else {
+                    if (singleFile.getName().endsWith(".mp3") || singleFile.getName().endsWith(".wav")) {
+                        arrayList.add(singleFile);
+                    }
                 }
             }
         }
+
         return arrayList;
     }
 
     void displaySongs(){
         final ArrayList<File> mySongs = findSong(Environment.getExternalStorageDirectory());
-
-            if(mySongs.size()==0){
-                return;
-            }
 
         items = new String[mySongs.size()];
 
