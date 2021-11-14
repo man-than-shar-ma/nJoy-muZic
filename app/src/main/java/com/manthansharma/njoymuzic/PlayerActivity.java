@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,6 +31,8 @@ public class PlayerActivity extends AppCompatActivity {
     static MediaPlayer mediaPlayer;
     int pos;
     ArrayList<File> mySongs;
+
+    Thread updateSeekbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,62 @@ public class PlayerActivity extends AppCompatActivity {
         mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
         mediaPlayer.start();
 
+        updateSeekbar = new Thread(){
+            @Override
+            public void run() {
+                int totalDuration = mediaPlayer.getDuration();
+                int currentPosition = 0;
+                while (currentPosition < totalDuration){
+                    try{
+                        sleep(500);
+                        currentPosition = mediaPlayer.getCurrentPosition();
+                        skBar.setProgress(currentPosition);
+
+                    }
+                    catch(InterruptedException | IllegalStateException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        skBar.setMax(mediaPlayer.getDuration());
+        updateSeekbar.start();
+        skBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.pr), PorterDuff.Mode.MULTIPLY);
+        skBar.getThumb().setColorFilter(getResources().getColor(R.color.pr), PorterDuff.Mode.SRC_IN);
+
+        skBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mediaPlayer.seekTo(seekBar.getProgress());
+            }
+        });
+
+        String endTime = createTime(mediaPlayer.getDuration());
+        txtStop.setText(endTime);
+        final Handler handler = new Handler();
+        final int delay = 1000;
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String currentTime = createTime(mediaPlayer.getCurrentPosition());
+                txtStart.setText(currentTime);
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
+
+
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,7 +151,7 @@ public class PlayerActivity extends AppCompatActivity {
                 txtSng.setText(sName);
                 mediaPlayer.start();
                 btnPlay.setBackgroundResource(R.drawable.ic_pause);
-                startAnimation(imgView);
+                startAnimation(imgView, 360f);
 
             }
         });
@@ -108,7 +168,7 @@ public class PlayerActivity extends AppCompatActivity {
                 txtSng.setText(sName);
                 mediaPlayer.start();
                 btnPlay.setBackgroundResource(R.drawable.ic_pause);
-                startAnimation(imgView);
+                startAnimation(imgView, -360f);
             }
         });
 
@@ -120,13 +180,23 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
-    public void startAnimation(View view){
-        ObjectAnimator animator = ObjectAnimator.ofFloat(imgView,"rotation",0f,360f);
+    public void startAnimation(View view, float rot){
+        ObjectAnimator animator = ObjectAnimator.ofFloat(imgView,"rotation",0f,rot);
         animator.setDuration(1000);
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(animator);
         animatorSet.start();
     }
 
-
+    public String createTime(int duration){
+        String time ="";
+        int min = duration/1000/60;
+        int sec = duration/1000%60;
+        time += min + ":";
+        if(sec<10){
+            time += "0";
+        }
+        time += sec;
+        return time;
+    }
 }
