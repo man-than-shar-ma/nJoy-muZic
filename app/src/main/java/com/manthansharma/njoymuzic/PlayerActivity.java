@@ -2,12 +2,15 @@ package com.manthansharma.njoymuzic;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ public class PlayerActivity extends AppCompatActivity {
     ImageButton btnPlay, btnNext, btnPrev;
     TextView txtSng, txtStart, txtStop;
     SeekBar skBar;
+    ImageView imgView;
 
     String sName;
     public static final String EXTRA_NAME = "song_name";
@@ -38,6 +42,8 @@ public class PlayerActivity extends AppCompatActivity {
         txtSng = findViewById(R.id.txtSng);
         txtStart = findViewById(R.id.txtStart);
         txtStop = findViewById(R.id.txtStop);
+
+        imgView = findViewById(R.id.imgView);
 
         skBar = findViewById(R.id.skBar);
 
@@ -72,5 +78,55 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                pos = ((pos + 1) % mySongs.size());
+                Uri u = Uri.parse(mySongs.get(pos).toString());
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), u);
+                sName = mySongs.get(pos).getName();
+                txtSng.setText(sName);
+                mediaPlayer.start();
+                btnPlay.setBackgroundResource(R.drawable.ic_pause);
+                startAnimation(imgView);
+
+            }
+        });
+
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                pos = ((pos - 1) < 0)? (mySongs.size() - 1): (pos - 1);
+                Uri u = Uri.parse(mySongs.get(pos).toString());
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), u);
+                sName = mySongs.get(pos).getName();
+                txtSng.setText(sName);
+                mediaPlayer.start();
+                btnPlay.setBackgroundResource(R.drawable.ic_pause);
+                startAnimation(imgView);
+            }
+        });
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                btnNext.performClick();
+            }
+        });
     }
+
+    public void startAnimation(View view){
+        ObjectAnimator animator = ObjectAnimator.ofFloat(imgView,"rotation",0f,360f);
+        animator.setDuration(1000);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(animator);
+        animatorSet.start();
+    }
+
+
 }
